@@ -1,0 +1,148 @@
+---
+title: "R"
+format: html
+---
+
+
+```{r}
+library(tidyverse)
+read_csv(file = "data/penguin_dataset.csv")
+uglyDuckling_data <- read_csv(file = "data/uglyDuckling_dataset.csv")
+uglyDuckling_data |> colnames()
+```
+
+
+```{r}
+ugly_duckling_data <- uglyDuckling_data |> rename(
+  species = "Species",
+  bill_length_mm = "billLengthMM",
+  flipper_length_mm = "Flipper_length_mm",
+  body_mass_g = "body mass g",
+  year = "Year"
+)
+
+ugly_duckling_data |> colnames()
+```
+
+
+```{r}
+ggplot(data = penguins,
+       mapping = aes(x = bill_len,
+                     y = bill_dep,
+                     colour = body_mass,
+                     shape = species)) +
+        labs(title = "Bill length and depth in penguins",
+        x = "Bill length (mm)",
+        y = "Bill depth (mm)",
+        colour = "body_mass",
+        shape = "species") +
+ theme_minimal() +
+  theme(plot.title = element_text(face = "bold")) +
+  geom_point(size = 3,
+             alpha = 0.6)
+```
+
+
+```{r}
+p_flipper_len <- ggplot(data = penguins,
+                        mapping = aes(x = species,
+                        y = flipper_len)) +
+                labs (title = "flipper lenght of penguins",
+                      x = "species",
+                      y = "flipper length (mm)",
+                      colour = "species") +
+                theme_minimal() +
+                theme(plot.title = element_text(face = "bold"))
+```
+
+
+```{r}
+p_flipper_len +
+    geom_boxplot() +
+    geom_jitter()
+```
+
+
+```{r}
+p_flipper_len +
+    geom_boxplot(size = 2,
+                 alpha = 6) +
+    facet_wrap(~island)
+```
+
+
+```{r}
+set.seed(0982)
+```
+
+
+```{r}
+set.seed(0982)
+month_data <- tibble(
+  date = seq(as.Date("2024-12-01"), 
+              as.Date("2024-12-31"), 
+              by = "day"),
+  count = sample(1:20, 31, replace = TRUE)  # Random counts per day
+) |>
+  mutate(
+    wday = wday(date, label = TRUE, abbr = TRUE),  # Day of the week (Sun-Sat)
+    week = (day(date) - 1) %/% 7 + 1  # Week number (1 to 5)
+  )
+
+month_data |> head()
+
+ggplot(data = month_data,
+       mapping = aes(x = wday, 
+                      y = week,
+                      fill = count)) +
+  labs(title = "Productivity during week",
+        x = "Wday",
+        y = "Week",
+        colour = "count") +
+  geom_tile(colour = "white") +
+  scale_y_reverse() +
+  theme_minimal()
+```
+
+
+```{r}
+parfumo_data_clean <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2024/2024-12-10/parfumo_data_clean.csv')
+```
+
+
+```{r}
+perfume_data <- parfumo_data_clean
+perfume_data |> group_by(Brand) |> 
+  summarize(avg_Rating = mean(Rating_Value, na.rm = TRUE)) |> 
+  arrange(desc(avg_Rating)) |> 
+  head()
+
+ggplot(data = perfume_data,
+       mapping = aes(x = Release_Year,
+        y = Rating_Count)) +
+        geom_point()
+```
+
+
+```{r}
+perfume_data |> filter( "Brand" < 20)
+```
+
+
+```{r}
+perfume_brand_data <- read.csv('https://raw.githubusercontent.com/tylermcinnes/visualization_day/refs/heads/main/data/perfume_brand_data.csv')
+
+brand_rating_data <- read.csv('https://raw.githubusercontent.com/tylermcinnes/visualization_day/refs/heads/main/data/brandRatingData.csv')
+
+brand_rating_data |> head()
+
+brand_rating_data <- parfumo_data_clean |> 
+  filter(Rating_Count >= 19 ) |> 
+  group_by(Brand) |> 
+  summarize(avg_Rating = mean(Rating_Value, na.rm = TRUE),
+            number_Perfumes = n(),
+            avg_rating_count = mean(Rating_Count)) |> 
+  filter(number_Perfumes >= 20) |> 
+  arrange(desc(avg_Rating)) |> 
+  head(n = 20)
+```
